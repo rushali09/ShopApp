@@ -6,15 +6,14 @@ import '../Providers/cart.dart';
 
 
 class CartItem extends StatelessWidget {
-   
-   final String productId;
    final String id;
+   final String productId;
    final double price;
    final int quantity;
    final String title;
    
 
-   CartItem(this.productId,this.id,this.price,this.quantity,this.title);
+   CartItem(this.id,this.productId,this.price,this.quantity,this.title);
 
   @override
   Widget build(BuildContext context) {
@@ -29,11 +28,44 @@ class CartItem extends StatelessWidget {
               size:40 ),
               alignment: Alignment.centerRight,
               padding: EdgeInsets.only(right:20),
-              
+              margin: EdgeInsets.symmetric(
+          horizontal: 15,
+          vertical: 4,
+        ),
           ),
             direction: DismissDirection.endToStart,
+           
+           
+            confirmDismiss: (direction){
+
+              return showDialog(
+                context: context, 
+                
+                builder:(ctx)=>
+                    
+                     AlertDialog(
+                       title:Text("Are you sure ?"),
+                       content: Text("Do you want to remove the item from the cart "),
+                       backgroundColor: Colors.pink,
+                       elevation: 50,
+                       actions:<Widget> [
+                         FlatButton(
+                           onPressed:(){
+                             Navigator.of(ctx).pop(false);
+                         }, child:Text("No") 
+                        ),
+                         FlatButton(onPressed: (){
+                             Navigator.of(ctx).pop(true);
+                         }, 
+                         child: Text("Yes")
+                         ),
+                       ],
+                      ),
+                    );
+           
+            },
             onDismissed: (direction){
-               Provider.of<Cart>(context,listen: false).removeItem(productId);
+               Provider.of<Cart>(context).removeItem(productId);
             },
           child: Card(
         margin: EdgeInsets.symmetric(horizontal: 15,vertical:4),

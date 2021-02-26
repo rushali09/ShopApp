@@ -3,6 +3,7 @@ import '../screens/product_detail_screen.dart';
 import 'package:provider/provider.dart';
 import '../Providers/product.dart';
 import '../Providers/cart.dart';
+import '../Providers/auth.dart';
 
 class ProductItem extends StatelessWidget {
   
@@ -16,7 +17,7 @@ class ProductItem extends StatelessWidget {
   Widget build(BuildContext context) {
     final product= Provider.of<Product>(context,listen: false);
     final cart = Provider.of<Cart>(context,listen: false);
-
+    final authData = Provider.of<Auth>(context,listen: false);
 
       return ClipRRect(
           borderRadius:BorderRadius.circular(10),
@@ -36,7 +37,7 @@ class ProductItem extends StatelessWidget {
         leading: IconButton(
           icon: Icon( product.isFavourite ?  Icons.favorite :Icons.favorite_border, color:Theme.of(context).accentColor),
           onPressed: (){
-            product.toggleFavouriteStatus();
+            product.toggleFavouriteStatus(authData.token,authData.userId);
           }
           
         ),
@@ -48,6 +49,19 @@ class ProductItem extends StatelessWidget {
             icon: Icon(Icons.shopping_cart,color:Theme.of(context).accentColor),
              onPressed: (){
                cart.addItem(product.id, product.price, product.title);
+               Scaffold.of(context).hideCurrentSnackBar();
+               Scaffold.of(context).showSnackBar(
+                 SnackBar(
+                   action: SnackBarAction(
+                     label: "UNDO",
+                     onPressed: (){
+                       cart.removeSingleItem(product.id);
+                     }
+                    ),
+                   duration: Duration(seconds:2),
+                   content: Text("Added Item To The Cart" , textAlign: TextAlign.start),
+                ),
+              );
              },
           ),
         ) ,
